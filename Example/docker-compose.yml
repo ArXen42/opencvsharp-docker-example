@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  # Image with built OpenCV and OpenCVSharp native wrapper used as base for images_api
+  opencvsharp_base:
+    image: opencvsharp_base
+    build:
+      context: OpenCVSharpEnvironment
+
+  example_api:
+    image: example_api
+    restart: always
+    build:
+      context: .
+      dockerfile: src/Example.WebApp/Dockerfile
+      args:
+        configuration: Release
+    ports:
+      - 7000:80
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      ASPNETCORE_ENVIRONMENT: ${ENVIRONMENT:-Development}
+    depends_on:
+      - opencvsharp_base
